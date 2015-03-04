@@ -1,0 +1,12 @@
+%html
+  %head
+    %title Hello React
+    = javascript_include_tag 'application'
+    = stylesheet_link_tag 'application'
+  %body
+    #wrapper
+      #content
+        = yield
+      #sidebar
+        #comments
+      .clear
