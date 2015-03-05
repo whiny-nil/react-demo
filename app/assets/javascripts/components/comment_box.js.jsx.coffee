@@ -1,12 +1,33 @@
 @CommentBox = React.createClass
+  # standard React methods
+  getInitialState: ->
+    return { data: []}
+  componentDidMount: ->
+    @loadCommentsFromServer()
+    setInterval @loadCommentsFromServer, @props.pollInterval
   render: ->
     return (
       `<div className="commentBox">
         <h1>Comments</h1>
-        <CommentList data={this.props.data}/>
+        <CommentList data={this.state.data}/>
         <CommentForm />
       </div>`
       )
+  # custom methods
+  loadCommentsFromServer: ->
+    $.ajax
+      url: @props.url
+      dataType: 'json'
+      success: (
+        (data) ->
+          @setState({data: data})
+        )
+        .bind @
+      error: (
+        (xhr, status, err) ->
+          console.error @props.url, status, err.toString
+        )
+        .bind @
 
 @CommentList = React.createClass
   render: ->

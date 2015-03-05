@@ -1,7 +1,2 @@
 $ ->
-  data = [
-    { author: "whiny_nil", text: "Wow! This is teh bomb" }
-    { author: "eimaj", text: "You said it!" }
-  ]
-
-  React.render `<CommentBox data={data}/>`, document.getElementById('comments')
+  React.render `<CommentBox url="/comments.json" pollInterval={2000}/>`, document.getElementById('comments')
