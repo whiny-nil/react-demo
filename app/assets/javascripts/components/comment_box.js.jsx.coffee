@@ -9,8 +9,8 @@
     return (
       `<div className="commentBox">
         <h1>Comments</h1>
-        <CommentList data={this.state.data}/>
-        <CommentForm />
+        <CommentList data={this.state.data} />
+        <CommentForm onCommentSubmit={this.handleCommentSubmit} />
       </div>`
       )
   # custom methods
@@ -28,6 +28,23 @@
           console.error @props.url, status, err.toString
         )
         .bind @
+  handleCommentSubmit: (comment) ->
+    comments = @state.data
+    newComments = comments.concat([comment])
+    @setState {data: newComments}
+    $.ajax
+      url: @props.url
+      dataType: 'json'
+      type: 'POST'
+      data: comment,
+      success: (
+        (data) ->
+          @setState({data: data})
+        ).bind @
+      error: (
+        (xhr, status, err) ->
+          console.error @props.url, status, err.toString()
+        ).bind @
 
 @CommentList = React.createClass
   render: ->
@@ -47,4 +64,20 @@
 
 @CommentForm = React.createClass
   render: ->
-    return `<div className="commentForm">Hello world! I am a CommentForm</div>`
+    return (
+      `<form className="commentForm" onSubmit={this.handleSubmit}>
+        <input type="text" placeholder="Your name" ref="author" />
+        <input type="text" placeholder="Say something..." ref="text" />
+        <input type="submit" value="Post" />
+      </form>`
+      )
+  handleSubmit: (e) ->
+    e.preventDefault()
+    author = @refs.author.getDOMNode().value.trim()
+    text = @refs.text.getDOMNode().value.trim()
+    if !text || !author
+      return
+
+    @props.onCommentSubmit({author: author, text: text})
+    @refs.author.getDOMNode().value = ''
+    @refs.text.getDOMNode().value = ''
